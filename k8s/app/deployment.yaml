@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hybrid-cloud-frontend-api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: hybrid-cloud-frontend-api
+      labels:
+        app: hybrid-cloud-frontend-api
+        version: v1.0
+    spec:
+      containers:
+        - name: hybrid-cloud-frontend-api
+          image: ko://github.com/kameshsampath/hybrid-cloud-frontend-api/cmd
+          imagePullPolicy: Always
+          env:
+            - name: GIN_MODE
+              value: "release"
+            - name: HYBRID_CLOUD_DB_DIR
+              value: "/hybrid-cloud-app"
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /v1/api/health/live
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /v1/api/health/ready
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "200Mi"
+            requests:
+              cpu: "50m"
+              memory: "100Mi"
+      restartPolicy: Always
+      serviceAccountName: hybrid-cloud-frontend-sa
+  selector:
+    matchLabels:
+      app: hybrid-cloud-frontend-api
+      version: v1.0

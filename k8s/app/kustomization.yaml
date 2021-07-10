@@ -1,0 +1,9 @@
+namespace: hybrid-cloud-frontend-sa
+commonLabels:
+  app: hybrid-cloud-frontend
+  version: v1.0
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - rbac.yaml

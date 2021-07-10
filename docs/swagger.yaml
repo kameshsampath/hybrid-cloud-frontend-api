@@ -1,0 +1,170 @@
+basePath: /v1/api
+definitions:
+  routes.CloudWorker:
+    properties:
+      cloudId:
+        description: Cloud the cloud which processed the request
+        type: string
+      lastProcessedTimestamp:
+        description: LastProcessedTimestamp is the last time when this worker processed
+          the request
+        type: string
+      requestId:
+        description: RequestId the request id
+        type: string
+      requestsProcessed:
+        description: Response the number of requests processed by the cloud
+        type: integer
+      response:
+        description: Response the processed text with all applied transformations
+        type: string
+      workerId:
+        description: WorkerId the worker id
+        type: string
+    type: object
+  routes.CloudWorkerRequest:
+    properties:
+      cloudId:
+        description: Cloud the cloud which processed the request
+        type: string
+      requestsProcessed:
+        description: Response the total number of requests processed by the cloud
+        type: integer
+    type: object
+  routes.Request:
+    properties:
+      reverse:
+        description: Reverse   reverse Text
+        type: boolean
+      sleepMillis:
+        description: SleepMillis add some sleep to processing
+        type: integer
+      text:
+        description: Text is any text to process
+        type: string
+      upperCase:
+        description: Uppercase change the Text to uppercase
+        type: boolean
+    type: object
+  routes.Response:
+    properties:
+      cloudId:
+        description: CloudId the cloud which processed the request
+        type: string
+      requestId:
+        description: RequestId the request id
+        type: string
+      text:
+        description: Text the processed text with all applied transformations
+        type: string
+      workerId:
+        description: WorkerId the worker id
+        type: string
+    type: object
+  utils.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: kamesh.sampath@solo.io
+    name: Kamesh Sampath
+  description: The front API that builds message to be processed by the backend api
+    that will be spread across the clouds
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Hybrid Cloud Demo Front API
+  version: "1.0"
+paths:
+  /health/live:
+    get:
+      description: Checks the API liveness, can be used with Kubernetes Probes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Checks the API liveness
+      tags:
+      - health
+  /health/ready:
+    get:
+      description: Checks the API readiness, can be used with Kubernetes Probes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Checks the API readiness
+      tags:
+      - health
+  /send-request:
+    post:
+      consumes:
+      - application/json
+      description: builds and send request message to backend for processing
+      parameters:
+      - description: Message to process
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/routes.Request'
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/routes.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HTTPError'
+      summary: builds and send request message to backend
+      tags:
+      - backend
+  /workers/cloud:
+    get:
+      description: List of all the Cloud Workers and total number of messages processed
+        by them
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The total number of requests processed by each cloud
+          schema:
+            items:
+              $ref: '#/definitions/routes.CloudWorkerRequest'
+            type: array
+      summary: Cloud Workers and the total number of messages processed by them
+      tags:
+      - worker
+  /workers/responses:
+    get:
+      description: Retrieves all responses processed by the backend sorted by timestamp
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Processed response data
+          schema:
+            items:
+              $ref: '#/definitions/routes.CloudWorker'
+            type: array
+      summary: Retrieves all responses processed by the backend
+      tags:
+      - worker
+schemes:
+- http
+- https
+swagger: "2.0"
