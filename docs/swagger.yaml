@@ -2,7 +2,7 @@ basePath: /v1/api
 definitions:
   routes.CloudWorker:
     properties:
-      cloudId:
+      cloud:
         description: Cloud the cloud which processed the request
         type: string
       lastProcessedTimestamp:
@@ -24,7 +24,7 @@ definitions:
     type: object
   routes.CloudWorkerRequest:
     properties:
-      cloudId:
+      cloud:
         description: Cloud the cloud which processed the request
         type: string
       requestsProcessed:
@@ -133,6 +133,21 @@ paths:
       summary: builds and send request message to backend
       tags:
       - backend
+  /workers/all:
+    get:
+      description: Retrieves all responses processed by the backend sorted by timestamp
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Processed response data
+          schema:
+            items:
+              $ref: '#/definitions/routes.CloudWorker'
+            type: array
+      summary: Retrieves all responses processed by the backend
+      tags:
+      - worker
   /workers/cloud:
     get:
       description: List of all the Cloud Workers and total number of messages processed
@@ -147,21 +162,6 @@ paths:
               $ref: '#/definitions/routes.CloudWorkerRequest'
             type: array
       summary: Cloud Workers and the total number of messages processed by them
-      tags:
-      - worker
-  /workers/responses:
-    get:
-      description: Retrieves all responses processed by the backend sorted by timestamp
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Processed response data
-          schema:
-            items:
-              $ref: '#/definitions/routes.CloudWorker'
-            type: array
-      summary: Retrieves all responses processed by the backend
       tags:
       - worker
 schemes:

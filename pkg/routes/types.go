@@ -36,7 +36,7 @@ type CloudWorker struct {
 	//WorkerId the worker id
 	WorkerId string `json:"workerId"`
 	//Cloud the cloud which processed the request
-	Cloud string `json:"cloudId"`
+	Cloud string `json:"cloud"`
 	//Response the processed text with all applied transformations
 	Response string `json:"response"`
 	//Response the number of requests processed by the cloud
@@ -51,7 +51,7 @@ type CloudWorkers []CloudWorker
 //CloudWorkerRequest holds the number of requests processed by each cloud
 type CloudWorkerRequest struct {
 	//Cloud the cloud which processed the request
-	Cloud string `json:"cloudId"`
+	Cloud string `json:"cloud"`
 	//Response the total number of requests processed by the cloud
 	RequestsProcessed int `json:"requestsProcessed"`
 }

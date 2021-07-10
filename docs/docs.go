@@ -108,6 +108,29 @@ var doc = `{
                 }
             }
         },
+        "/workers/all": {
+            "get": {
+                "description": "Retrieves all responses processed by the backend sorted by timestamp",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "worker"
+                ],
+                "summary": "Retrieves all responses processed by the backend",
+                "responses": {
+                    "200": {
+                        "description": "Processed response data",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/routes.CloudWorker"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/workers/cloud": {
             "get": {
                 "description": "List of all the Cloud Workers and total number of messages processed by them",
@@ -130,36 +153,13 @@ var doc = `{
                     }
                 }
             }
-        },
-        "/workers/responses": {
-            "get": {
-                "description": "Retrieves all responses processed by the backend sorted by timestamp",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "worker"
-                ],
-                "summary": "Retrieves all responses processed by the backend",
-                "responses": {
-                    "200": {
-                        "description": "Processed response data",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/routes.CloudWorker"
-                            }
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
         "routes.CloudWorker": {
             "type": "object",
             "properties": {
-                "cloudId": {
+                "cloud": {
                     "description": "Cloud the cloud which processed the request",
                     "type": "string"
                 },
@@ -188,7 +188,7 @@ var doc = `{
         "routes.CloudWorkerRequest": {
             "type": "object",
             "properties": {
-                "cloudId": {
+                "cloud": {
                     "description": "Cloud the cloud which processed the request",
                     "type": "string"
                 },

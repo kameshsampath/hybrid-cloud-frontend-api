@@ -19,7 +19,7 @@ const (
 // @Tags worker
 // @Produce json
 // @Success 200 {object} routes.CloudWorkers  "Processed response data"
-// @Router /workers/responses [get]
+// @Router /workers/all [get]
 func (e *Endpoints) Responses(c *gin.Context) {
 	if rows, err := e.DBConn.Query(DMLALLRESPONSESCLOUDWORKERS); err != nil {
 		httputil.NewError(c, http.StatusNotFound, err)
