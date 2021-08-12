@@ -70,7 +70,6 @@ definitions:
         example: status bad request
         type: string
     type: object
-host: localhost:8080
 info:
   contact:
     email: kamesh.sampath@solo.io
