@@ -4,56 +4,38 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	_ "github.com/kameshsampath/hybrid-cloud-frontend-api/docs"
-	"github.com/kameshsampath/hybrid-cloud-frontend-api/pkg/routes"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	_ "github.com/kameshsampath/hybrid-cloud-frontend-api/docs"
+	"github.com/kameshsampath/hybrid-cloud-frontend-api/pkg/data"
+	"github.com/kameshsampath/hybrid-cloud-frontend-api/pkg/routes"
+	_ "github.com/lib/pq"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-const (
-	//DDLTABLES  creates the workers and cloud workers table
-	DDLTABLES = `
-DROP TABLE IF EXISTS cloud_workers;
-CREATE TABLE IF NOT EXISTS cloud_workers (
-requestId text PRIMARY KEY NOT NULL,
-workerId TEXT NOT NULL,
-cloud TEXT NOT NULL,
-requestsProcessed INTEGER TEXT DEFAULT 1,
-response TEXT TEXT,
-timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-`
-)
+const ()
 
 var (
-	dbDir    string
-	db       *sql.DB
-	err      error
-	dbFile   string
-	router   *gin.Engine
-	httpPort = "8080"
+	err            error
+	dbFile         string
+	router         *gin.Engine
+	httpPort       = "8080"
+	db             *sql.DB
+	httpListenPort = "8080"
+	pgHost         = "localhost"
+	pgPort         = "5432"
+	pgUser         = "demo"
+	pgPassword     = "pa55Word!"
+	pgDatabase     = "demodb"
 )
-
-func init() {
-	if dbDir = os.Getenv("HYBRID_CLOUD_DB_DIR"); dbDir == "" {
-		homedir, _ := os.UserHomeDir()
-		dbDir = filepath.Join(homedir, ".hybrid-cloud-app")
-	}
-	if _, err := os.Stat(dbDir); err != nil {
-		if err = os.Mkdir(dbDir, os.ModeDir); err != nil {
-			panic(fmt.Sprintf("Error creating DB Dir %s", dbDir))
-		}
-	}
-}
 
 // @title Hybrid Cloud Demo Front API
 // @version 1.0
@@ -71,21 +53,34 @@ func init() {
 // @schemes http https
 func main() {
 
-	if err == nil {
-		dbFile = filepath.Join(dbDir, "app.db")
-		db, err = sql.Open("sqlite3", dbFile)
-		if err != nil {
-			log.Fatalf("Error opening DB %s, reason %s", dbFile, err)
-		}
-		//TODO Graceful shutdown
-		defer db.Close()
-
-		_, err = db.Exec(DDLTABLES)
-		if err != nil {
-			log.Fatalf("Error initializing DB: %s", err)
-		}
+	if h := os.Getenv("POSTGRES_HOST"); h != "" {
+		pgHost = h
 	}
+	if p := os.Getenv("POSTGRES_PORT"); p != "" {
+		pgPort = p
+	}
+	if h := os.Getenv("POSTGRES_USER"); h != "" {
+		pgUser = h
+	}
+	if p := os.Getenv("POSTGRES_PASSWORD"); p != "" {
+		pgPassword = p
+	}
+	if d := os.Getenv("POSTGRES_DB"); d != "" {
+		pgDatabase = d
+	}
+	pgsqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		pgHost, pgPort, pgUser, pgPassword, pgDatabase)
+	db, err = sql.Open("postgres", pgsqlInfo)
+	if err != nil {
+		log.Fatalf("Error opening DB %s, reason %s", dbFile, err)
+	}
+	//TODO Graceful shutdown
+	defer db.Close()
 
+	_, err = db.Exec(data.DDLTABLES)
+	if err != nil {
+		log.Fatalf("Error initializing DB: %s", err)
+	}
 	if mode := os.Getenv("GIN_MODE"); mode != "" {
 		gin.SetMode(mode)
 	}

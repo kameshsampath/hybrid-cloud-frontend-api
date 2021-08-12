@@ -4,31 +4,30 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/go-resty/resty/v2"
-	"github.com/google/uuid"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/google/uuid"
+	"github.com/kameshsampath/hybrid-cloud-frontend-api/pkg/data"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-const (
-	DMLINSERTCLOUDWORKER = `INSERT INTO cloud_workers('requestId','workerId','cloud','response') 
-VALUES(?,?,?,?);`
-)
+const ()
 
 var (
 	client            = resty.New()
 	backendServiceUrl = os.Getenv("HYBRID_CLOUD_BACKEND_URL")
 )
 
-func sendMessage(request Request, db *sql.DB) {
+func sendMessage(request data.Request, db *sql.DB) {
 	requestId := generateRequestId()
 	rChan := make(chan *resty.Response)
 	eChan := make(chan error)
 
 	//send it to backend
 	go func() {
-		message := &Message{
+		message := &data.Message{
 			RequestId: requestId,
 			Request:   request,
 		}
@@ -52,7 +51,7 @@ func saveMessageToDB(requestId string, rChan chan *resty.Response, eChan chan er
 	select {
 	case res := <-rChan:
 		log.Printf("Processing  response for request %s", requestId)
-		var bResponse Response
+		var bResponse data.Response
 		b := res.Body()
 		err := json.Unmarshal(b, &bResponse)
 		if err != nil {
@@ -63,7 +62,7 @@ func saveMessageToDB(requestId string, rChan chan *resty.Response, eChan chan er
 				log.Printf("Unable to begin transaction %s", err)
 				return
 			} else {
-				if stmt, err := db.Prepare(DMLINSERTCLOUDWORKER); err != nil {
+				if stmt, err := db.Prepare(data.DMLINSERTCLOUDWORKER); err != nil {
 					log.Printf("Error preparing statement %s", err)
 				} else {
 					if _, err := stmt.Exec(bResponse.RequestId, bResponse.WorkerId,

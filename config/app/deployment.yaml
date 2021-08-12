@@ -18,8 +18,33 @@ spec:
           env:
             - name: GIN_MODE
               value: "release"
-            - name: HYBRID_CLOUD_DB_DIR
-              value: "/hybrid-cloud-app"
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: hostname
+                  name: pgsql-credentials
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: port
+                  name: pgsql-credentials
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: pgsql-credentials
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: pgsql-credentials
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  key: database
+                  name: pgsql-credentials
+            - name: HYBRID_CLOUD_BACKEND_URL
+              value: hybridcloud-backend-api:8080
           livenessProbe:
             httpGet:
               port: 8080

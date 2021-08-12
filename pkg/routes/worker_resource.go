@@ -1,33 +1,31 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/swaggo/swag/example/celler/httputil"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/kameshsampath/hybrid-cloud-frontend-api/pkg/data"
+	"github.com/swaggo/swag/example/celler/httputil"
 )
 
-const (
-	DMLALLRESPONSESCLOUDWORKERS       = `SELECT requestId,workerId,cloud,response,timestamp from cloud_workers ORDER BY timestamp desc;`
-	DMLREQUESTSPROCESSEDBYCLOUDWORKER = `SELECT cw.cloud as cloud,sum(cw.requestsProcessed) as requestTotal 
-  FROM cloud_workers cw GROUP BY cw.cloud;`
-)
+const ()
 
 // Responses godoc
 // @Summary Retrieves all responses processed by the backend
 // @Description Retrieves all responses processed by the backend sorted by timestamp
 // @Tags worker
 // @Produce json
-// @Success 200 {object} routes.CloudWorkers  "Processed response data"
+// @Success 200 {object} data.CloudWorkers  "Processed response data"
 // @Router /workers/all [get]
 func (e *Endpoints) Responses(c *gin.Context) {
-	if rows, err := e.DBConn.Query(DMLALLRESPONSESCLOUDWORKERS); err != nil {
+	if rows, err := e.DBConn.Query(data.DMLALLRESPONSESCLOUDWORKERS); err != nil {
 		httputil.NewError(c, http.StatusNotFound, err)
 		return
 	} else {
-		var cws CloudWorkers
+		var cws data.CloudWorkers
 		for rows.Next() {
-			var cw CloudWorker
+			var cw data.CloudWorker
 			if err := rows.Scan(&cw.RequestId, &cw.WorkerId, &cw.Cloud, &cw.Response, &cw.LastProcessedTimestamp); err != nil {
 				log.Printf("Error while retriving row data %s", err)
 			} else {
@@ -44,16 +42,16 @@ func (e *Endpoints) Responses(c *gin.Context) {
 // @Description List of all the Cloud Workers and total number of messages processed by them
 // @Tags worker
 // @Produce json
-// @Success 200 {object} routes.CloudWorkerRequests "The total number of requests processed by each cloud"
+// @Success 200 {object} data.CloudWorkerRequests "The total number of requests processed by each cloud"
 // @Router /workers/cloud [get]
 func (e *Endpoints) CloudWorkerRequests(c *gin.Context) {
-	if rows, err := e.DBConn.Query(DMLREQUESTSPROCESSEDBYCLOUDWORKER); err != nil {
+	if rows, err := e.DBConn.Query(data.DMLREQUESTSPROCESSEDBYCLOUDWORKER); err != nil {
 		httputil.NewError(c, http.StatusNotFound, err)
 		return
 	} else {
-		var cwrs CloudWorkerRequests
+		var cwrs data.CloudWorkerRequests
 		for rows.Next() {
-			var cwr CloudWorkerRequest
+			var cwr data.CloudWorkerRequest
 			if err := rows.Scan(&cwr.Cloud, &cwr.RequestsProcessed); err != nil {
 				log.Printf("Error while retriving row data %s", err)
 			} else {

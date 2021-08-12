@@ -88,7 +88,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/routes.Request"
+                            "$ref": "#/definitions/data.Request"
                         }
                     }
                 ],
@@ -96,7 +96,7 @@ var doc = `{
                     "202": {
                         "description": "Accepted",
                         "schema": {
-                            "$ref": "#/definitions/routes.Response"
+                            "$ref": "#/definitions/data.Response"
                         }
                     },
                     "400": {
@@ -124,7 +124,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/routes.CloudWorker"
+                                "$ref": "#/definitions/data.CloudWorker"
                             }
                         }
                     }
@@ -147,7 +147,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/routes.CloudWorkerRequest"
+                                "$ref": "#/definitions/data.CloudWorkerRequest"
                             }
                         }
                     }
@@ -156,7 +156,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "routes.CloudWorker": {
+        "data.CloudWorker": {
             "type": "object",
             "properties": {
                 "cloud": {
@@ -185,7 +185,7 @@ var doc = `{
                 }
             }
         },
-        "routes.CloudWorkerRequest": {
+        "data.CloudWorkerRequest": {
             "type": "object",
             "properties": {
                 "cloud": {
@@ -198,7 +198,7 @@ var doc = `{
                 }
             }
         },
-        "routes.Request": {
+        "data.Request": {
             "type": "object",
             "properties": {
                 "reverse": {
@@ -219,7 +219,7 @@ var doc = `{
                 }
             }
         },
-        "routes.Response": {
+        "data.Response": {
             "type": "object",
             "properties": {
                 "cloudId": {
